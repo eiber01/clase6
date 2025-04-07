@@ -48,6 +48,9 @@ class Mascota:
         self.__fecha_ingreso=f
     def asignarLista_Medicamentos(self,n):
         self.__lista_medicamentos = n 
+    def existeMedicamento(self, nombre_medicamento):
+        return any(med.verNombre()== nombre_medicamento for med in self.__lista_medicamentos)
+        
     
 class sistemaV:
     def __init__(self):
@@ -75,10 +78,9 @@ class sistemaV:
         return None
 
     def verMedicamento(self,historia):
-        #busco la mascota y devuelvo el atributo solicitado
-        for masc in self.__lista_mascotas:
-            if historia == masc.verHistoria():
-                return masc.verLista_Medicamentos() 
+        mascota = self.buscarMascota(historia)
+        if mascota:
+            return mascota.verLista_Medicamentos()
         return None
     
     def eliminarMascota(self, historia):
@@ -112,27 +114,37 @@ def main():
                 peso=int(input("Ingrese el peso de la mascota: "))
                 fecha=input("Ingrese la fecha de ingreso (dia/mes/año): ")
                 nm=int(input("Ingrese cantidad de medicamentos: "))
-                lista_med=[]
-
-                for i in range(0,nm):
-                    nombre_medicamentos = input("Ingrese el nombre del medicamento: ")
-                    dosis =int(input("Ingrese la dosis: "))
-                    medicamento = Medicamento()
-                    medicamento.asignarNombre(nombre_medicamentos)
-                    medicamento.asignarDosis(dosis)
-                    lista_med.append(medicamento)
-
                 mas= Mascota()
                 mas.asignarNombre(nombre)
                 mas.asignarHistoria(historia)
                 mas.asignarPeso(peso)
                 mas.asignarTipo(tipo)
                 mas.asignarFecha(fecha)
+
+                lista_med = []
+                for i in range(nm):
+                    while True:
+                        nombre_medicamento = input("Ingrese el nombre del medicamento: ")
+                        # Verificar si ya está en la lista actual
+                        if any(med.verNombre() == nombre_medicamento for med in lista_med):
+                            print("Ese medicamento ya fue registrado. Intente con otro.")
+                        else:
+                            break
+                    dosis = int(input("Ingrese la dosis: "))
+                    medicamento = Medicamento()
+                    medicamento.asignarNombre(nombre_medicamento)
+                    medicamento.asignarDosis(dosis)
+                    lista_med.append(medicamento)
+
+            
                 mas.asignarLista_Medicamentos(lista_med)
                 servicio_hospitalario.ingresarMascota(mas)
+                
 
+                
+                
             else:
-                print("Ya existe la mascota con el numero de histoira clinica")
+                print("Ya existe la mascota con el numero de historia clinica")
 
         elif menu==2: # Ver fecha de ingreso
             q = int(input("Ingrese la historia clínica de la mascota: "))
@@ -176,6 +188,7 @@ def main():
 if __name__=='__main__':
     main()
 
+print ("Fin del programa...")
 
 
 
